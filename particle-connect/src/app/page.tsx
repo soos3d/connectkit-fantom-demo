@@ -20,6 +20,7 @@ import {
   useWallets,
   useModal,
 } from "@particle-network/connectkit";
+import { getChainIcon } from "@particle-network/connectkit/chains";
 
 // Connectkit uses Viem, so Viem's features can be utilized
 import { formatEther, parseEther } from "viem";
@@ -58,6 +59,7 @@ export default function Home() {
   const [recipientAddress, setRecipientAddress] = useState<string>(""); // Store recipient's address for transactions
   const [transactionHash, setTransactionHash] = useState<string | null>(null); // Store transaction hash after sending
   const [isSending, setIsSending] = useState<boolean>(false); // State for showing sending status
+  const [iconUrl, setIconUrl] = useState(""); // Set the state to hold the icon URL
 
   // Connection status message based on the account's connection state
   const connectionStatus = isConnecting
@@ -88,31 +90,26 @@ export default function Home() {
     loadAccount();
   }, [chainId, address]);
 
+  // Use getChainIcon in useEffect to update the state
+  useEffect(() => {
+    if (chainId) {
+      const iconUrl = getChainIcon(chainId);
+      setIconUrl(iconUrl);
+    }
+  }, [chainId]);
+
   // Fetch and set user information when connected
   useEffect(() => {
     const fetchUserInfo = async () => {
-      setIsLoadingUserInfo(true);
-      setUserInfoError(null);
-
+      // Use isConnected as a condition to avoid account not initialized errors
       if (primaryWallet?.connector?.walletConnectorType === "particleAuth") {
-        try {
-          const userInfo = getUserInfo();
-          setUserInfo(userInfo);
-          console.log("userInfo ", userInfo);
-        } catch (error) {
-          console.log("getUserInfo error: ", error);
-        } finally {
-          setIsLoadingUserInfo(false);
-        }
-      } else {
-        setIsLoadingUserInfo(false); // Ensure to stop loading if connector type doesn't match
+        const userInfo = getUserInfo();
+        setUserInfo(userInfo);
       }
     };
 
-    if (status === "connected") {
-      fetchUserInfo();
-    }
-  }, [status, primaryWallet, getUserInfo]); // Added connector and getUserInfo to the dependency array
+    fetchUserInfo();
+  }, [isConnected, getUserInfo]);
 
   // Fetch user's balance and format it for display
   const fetchBalance = async () => {
@@ -222,9 +219,11 @@ export default function Home() {
         {isConnected ? (
           <>
             <div className="flex justify-center w-full">
+              <div className="absolute top-6 right-6">
+                <ConnectButton label="Click to login" />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
                 <div className="border border-purple-500 p-6 rounded-lg">
-                  <ConnectButton />
                   {isLoadingUserInfo ? (
                     <div>Loading user info...</div>
                   ) : userInfoError ? (
@@ -260,8 +259,15 @@ export default function Home() {
                     </h2>
                   )}
 
-                  <h2 className="text-lg font-semibold mb-2 text-white">
+                  <h2 className="text-lg font-semibold mb-2 text-white flex items-center space-x-2">
                     Chain: <code>{chain?.name || "Loading..."}</code>
+                    {iconUrl && (
+                      <img
+                        src={iconUrl}
+                        alt="Chain Icon"
+                        className="w-8 h-8 rounded-full" // Tailwind CSS for styling
+                      />
+                    )}
                   </h2>
                   <h2 className="text-lg font-semibold mb-2 text-white flex items-center">
                     Balance: {balance !== "" ? balance : "Loading..."}

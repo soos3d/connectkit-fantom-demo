@@ -4,15 +4,15 @@
     <img src="https://i.imgur.com/xmdzXU4.png" />
   </a>
   <h3>
- @particle-network/auth-core Demo Application 
+ @particle-network/connectkit on Fuse Demo 
   </h3>
 </div>
 
-# Particle Connect 2.0 Starter
+# Particle Connect on Fuse
 
 **Particle Connect** enables a unified modal driving connection with social logins (through Particle Auth) and standard Web3 wallets, creating an equally accessible experience for Web3 natives and traditional consumers. Particle Connect is an all-in-one SDK capable of handling end-to-end onboarding and wallet connection.
 
-This app enables you to log in using social logins or Web3 methods via Particle Connect and interact with the Ethereum Sepolia, Base Sepolia, and Avalanche Fuji testnets. You can view your account information and send transfer transactions to any address you input in the UI.
+This app enables you to log in using social logins or Web3 methods via Particle Connect and interact with the Fuse mainnet and testnet. You can view your account information and send transfer transactions to any address you input in the UI.
 
 Built using:
 
@@ -31,7 +31,7 @@ Built using:
 
 ### Clone this repository
 ```
-git clone https://github.com/Particle-Network/particle-connectkit2.0-quickstart.git
+git clone https://github.com/Particle-Network/connectkit-fuse-demo
 ```
 
 ### Move into the app directory
@@ -69,6 +69,12 @@ Or
 yarn dev
 ```
 
+## What is Fuse
+
+Fuse is a decentralized blockchain platform designed to make everyday payments and decentralized finance (DeFi) accessible to mainstream users. It offers fast, low-cost transactions and a user-friendly infrastructure for creating and managing token-based economies. 
+
+Optimized for mobile applications, Fuse helps traditional finance integrate into blockchain technology, making it ideal for developers building payment-focused dApps and micro-economies.
+
 ## Build with Particle Connect (from scratch)
 
 To get started with Particle Connect in your application, follow these steps:
@@ -103,7 +109,7 @@ To get started with Particle Connect in your application, follow these steps:
 
    import { ConnectKitProvider, createConfig } from '@particle-network/connectkit';
    import { authWalletConnectors } from '@particle-network/connectkit/auth';
-   import { mainnet, solana } from '@particle-network/connectkit/chains';
+   import { fuse, fuseSparknet } from '@particle-network/connectkit/chains';
    import { evmWalletConnectors } from '@particle-network/connectkit/evm';
    import { injected as solaInjected, solanaWalletConnectors } from '@particle-network/connectkit/solana';
    import { wallet, EntryPosition } from '@particle-network/connectkit/wallet';
@@ -153,7 +159,7 @@ To get started with Particle Connect in your application, follow these steps:
                visible: true,
            }),
        ],
-       chains: [mainnet, solana],
+       chains: [fuse, fuseSparknet],
    });
 
    export const ParticleConnectkit = ({ children }: React.PropsWithChildren) => {
@@ -175,7 +181,7 @@ To get started with Particle Connect in your application, follow these steps:
 
    export const metadata: Metadata = {
      title: "Particle Connect",
-     description: "Demo showcasing a quickstart for Particle Connect 2.0",
+     description: "Demo showcasing a quickstart for Particle Connect 2.0 on Fuse",
    };
 
    export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
