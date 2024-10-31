@@ -4,15 +4,15 @@
     <img src="https://i.imgur.com/xmdzXU4.png" />
   </a>
   <h3>
- @particle-network/connectkit on Fuse Demo 
+ @particle-network/connectkit on Lumia Demo 
   </h3>
 </div>
 
-# Particle Connect on Fuse
+# Particle Connect on Lumia
 
 **Particle Connect** enables a unified modal driving connection with social logins (through Particle Auth) and standard Web3 wallets, creating an equally accessible experience for Web3 natives and traditional consumers. Particle Connect is an all-in-one SDK capable of handling end-to-end onboarding and wallet connection.
 
-This app enables you to log in using social logins or Web3 methods via Particle Connect and interact with the Fuse mainnet and testnet. You can view your account information and send transfer transactions to any address you input in the UI.
+This app enables you to log in using social logins or Web3 methods via Particle Connect and interact with the [Lumia chain](https://docs.lumia.org/). You can view your account information and send transfer transactions to any address you input in the UI.
 
 Built using:
 
@@ -31,7 +31,7 @@ Built using:
 
 ### Clone this repository
 ```
-git clone https://github.com/Particle-Network/connectkit-fuse-demo
+git clone https://github.com/Particle-Network/connectkit-lumia-demo
 ```
 
 ### Move into the app directory
@@ -56,7 +56,7 @@ npm install
 This project requires several keys from Particle Network to be defined in `.env`. The following should be defined:
 - `NEXT_PUBLIC_PROJECT_ID`, the ID of the corresponding application in your [Particle Network dashboard](https://dashboard.particle.network/#/applications).
 - `NEXT_PUBLIC_CLIENT_KEY`, the ID of the corresponding project in your [Particle Network dashboard](https://dashboard.particle.network/#/applications).
--  `NEXT_PUBLIC_APP_ID`, the client key of the corresponding project in your [Particle Network dashboard](https://dashboard.particle.network/#/applications).
+- `NEXT_PUBLIC_APP_ID`, the client key of the corresponding project in your [Particle Network dashboard](https://dashboard.particle.network/#/applications).
 
 ### Start the project
 ```sh
@@ -69,11 +69,11 @@ Or
 yarn dev
 ```
 
-## What is Fuse
+## What is Lumia
 
-Fuse is a decentralized blockchain platform designed to make everyday payments and decentralized finance (DeFi) accessible to mainstream users. It offers fast, low-cost transactions and a user-friendly infrastructure for creating and managing token-based economies. 
+Lumia is a hyper-liquid, capital-efficient zkEVM leveraging advanced technologies like PolygonCDK, AvailDA, and a custom Data Availability Committee (DAC) for redundancy. 
 
-Optimized for mobile applications, Fuse helps traditional finance integrate into blockchain technology, making it ideal for developers building payment-focused dApps and micro-economies.
+Built through a collaboration between GatewayFM and Lumia’s tech team, Lumia integrates features such as its liquidity network (Lumia Stream), decentralized sequencers and zkProvers, fast finality, and robust validity proofs.
 
 ## Build with Particle Connect (from scratch)
 
@@ -107,64 +107,43 @@ To get started with Particle Connect in your application, follow these steps:
    ```tsx
    'use client';
 
-   import { ConnectKitProvider, createConfig } from '@particle-network/connectkit';
-   import { authWalletConnectors } from '@particle-network/connectkit/auth';
-   import { fuse, fuseSparknet } from '@particle-network/connectkit/chains';
-   import { evmWalletConnectors } from '@particle-network/connectkit/evm';
-   import { injected as solaInjected, solanaWalletConnectors } from '@particle-network/connectkit/solana';
-   import { wallet, EntryPosition } from '@particle-network/connectkit/wallet';
-   import React from 'react';
+    import React from 'react';
+    import { ConnectKitProvider, createConfig } from '@particle-network/connectkit';
+    import { authWalletConnectors } from '@particle-network/connectkit/auth';
+    import { defineChain } from '@particle-network/connectkit/chains';
 
-   const config = createConfig({
-       projectId: 'Replace with your Particle Project ID',
-       clientKey: 'Replace with your Particle Client Key', // Retrieved from https://dashboard.particle.network
-       appId: 'Replace with your Particle App ID',
-       appearance: { 
-           recommendedWallets: [
-               { walletId: 'metaMask', label: 'Recommended' },
-               { walletId: 'coinbaseWallet', label: 'Popular' },
-           ],
-           splitEmailAndPhone: false, 
-           collapseWalletList: false, 
-           hideContinueButton: false, 
-           connectorsOrder: ['email', 'phone', 'social', 'wallet'], 
-           language: 'en-US', 
-           mode: 'light', 
-           theme: {
-               '--pcm-accent-color': '#ff4d4f',
-           },
-           logo: 'https://...',
-           filterCountryCallingCode: (countries) => {
-               return countries.filter((item) => item === 'US');
-           },
-       },
-       walletConnectors: [
-           evmWalletConnectors({
-               metadata: { name: 'My App', icon: '', description: '', url: '' },
-               walletConnectProjectId: 'Replace with your WalletConnect Project ID', 
-           }),
-           authWalletConnectors({
-               authTypes: ["email", "google", "apple", "twitter", "github"],
-               fiatCoin: "USD",
-               promptSettingConfig: {
-                   promptMasterPasswordSettingWhenLogin: 1,
-                   promptPaymentPasswordSettingWhenSign: 1,
-               },
-           }),
-           solanaWalletConnectors(), 
-       ],
-       plugins: [
-           wallet({
-               entryPosition: EntryPosition.BR, 
-               visible: true,
-           }),
-       ],
-       chains: [fuse, fuseSparknet],
-   });
+    // Define the Lumia testnet
+    const LumiaTestnet = defineChain({
+    id: 1952959480,
+    name: "Lumia Testnet",
+    nativeCurrency: {
+        decimals: 18,
+        name: "LUMIA",
+        symbol: "LUMIA",
+    },
+    rpcUrls: {
+        default: {
+        http: ["https://testnet-rpc.lumia.org"],
+        },
+    },
+    blockExplorers: {
+        default: { name: "Explorer", url: "https://testnet-explorer.lumia.org/" },
+    },
+    testnet: true,
+    });
 
-   export const ParticleConnectkit = ({ children }: React.PropsWithChildren) => {
-       return <ConnectKitProvider config={config}>{children}</ConnectKitProvider>;
-   };
+    const config = createConfig({
+    projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
+    clientKey: process.env.NEXT_PUBLIC_CLIENT_KEY!,
+    appId: process.env.NEXT_PUBLIC_APP_ID!,
+    walletConnectors: [authWalletConnectors({})],
+
+    chains: [LumiaTestnet],
+    });
+
+    export const ParticleConnectkit = ({ children }: React.PropsWithChildren) => {
+    return <ConnectKitProvider config={config}>{children}</ConnectKitProvider>;
+    };
    ```
 
 3. **Wrap Your App**:
@@ -181,7 +160,7 @@ To get started with Particle Connect in your application, follow these steps:
 
    export const metadata: Metadata = {
      title: "Particle Connect",
-     description: "Demo showcasing a quickstart for Particle Connect 2.0 on Fuse",
+     description: "Demo showcasing a quickstart for Particle Connect 2.0 on Lumia",
    };
 
    export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
